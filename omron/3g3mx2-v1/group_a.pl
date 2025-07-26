@@ -85,6 +85,25 @@ value_function_text(04, Function, Text):-
 value_function_text(05, Function, Text):-
     Text = "DC injection braking on jogging stop/Enabled during operation",
     #fuzzy_match_key_value(Function, Text).
+value_function_text(01, Function, Text):-
+    Text = "Manual torque boost",
+    #fuzzy_match_key_value(Function, Text).
+value_function_text(02, Function, Text):-
+    Text = "Automatic torque boost",
+    #fuzzy_match_key_value(Function, Text).
+value_function_text(00, Function, Text):-
+    Text = "Constant torque characteristic (VC)",
+    #fuzzy_match_key_value(Function, Text).
+value_function_text(01, Function, Text):-
+    Text = "Reduced Characteristic (VP)",
+    #fuzzy_match_key_value(Function, Text).
+value_function_text(02, Function, Text):-
+    Text = "Free V/f setting",
+    #fuzzy_match_key_value(Function, Text).
+value_function_text(03, Function, Text):-
+    Text = "Sensorless vector control",
+    #fuzzy_match_key_value(Function, Text).
+
 
 %%%%%%%%%%%%
 
@@ -657,14 +676,121 @@ a039(V, Text):-
     !.
 a039(04, default).
 
+a041(V, Text):-
+    b_getval(spec, S),
+    value_fuzzy_match_key_value(V, S.get(inputs/vf_characteristics/'1st_torque_boost_selection'), Text),
+    !.
 a041(01, default).
+
+c241(V, Text):-
+    b_getval(spec, S),
+    value_fuzzy_match_key_value(V, S.get(inputs/vf_characteristics/'2nd_torque_boost_selection'), Text),
+    !.
 a241(01, default).
+
+a042(P, Msg):-
+    b_getval(spec, S),
+    P #= S.get(inputs/vf_characteristics/'1st_manual_torque_boost_voltage') * 100 // S.get(motor/'1st'/voltage/rated),
+    format(atom(Msg), '~D %% of 1st Motor Rated Voltage', [S.get(inputs/vf_characteristics/'1st_manual_torque_boost_voltage')]),
+    P >= 0.0,
+    P =< 20.0,
+    !.
 a042(1.0, default).
+
+a242(P, Msg):-
+    b_getval(spec, S),
+    P #= S.get(inputs/vf_characteristics/'2nd_manual_torque_boost_voltage') * 100 // S.get(motor/'2nd'/voltage/rated),
+    format(atom(Msg), '~D %% of 2nd Motor Rated Voltage', [S.get(inputs/vf_characteristics/'2nd_manual_torque_boost_voltage')]),
+    P >= 0.0,
+    P =< 20.0,
+    !.
+a242(1.0, default).
+
+a043(P, Msg):-
+    b_getval(spec, S),
+    P #= S.get(inputs/vf_characteristics/'1st_manual_torque_boost_frequency') * 100 // S.get(motor/'1st'/frequency/base),
+    format(atom(Msg), '~D %% of 1st Base Frequency', [S.get(inputs/vf_characteristics/'1st_manual_torque_boost_frequency')]),
+    P >= 0.0,
+    P =< 50.0,
+    !.
 a043(5.0, default).
+
+a243(P, Msg):-
+    b_getval(spec, S),
+    P #= S.get(inputs/vf_characteristics/'2nd_manual_torque_boost_frequency') * 100 // S.get(motor/'2nd'/frequency/base),
+    format(atom(Msg), '~D %% of 2nd Base Frequency', [S.get(inputs/vf_characteristics/'2nd_manual_torque_boost_frequency')]),
+    P >= 0.0,
+    P =< 50.0,
+    !.
+a243(5.0, default).
+
+a044(V, Text):-
+    b_getval(spec, S),
+    value_fuzzy_match_key_value(V, S.get(inputs/vf_characteristics/'1st_control_method'), Text),
+    !.
 a044(00, default).
+
+a244(V, Text):-
+    b_getval(spec, S),
+    value_fuzzy_match_key_value(V, S.get(inputs/vf_characteristics/'2nd_control_method'), Text),
+    !.
+a244(00, default).
+
+a045(P, Msg):-
+    b_getval(spec, S),
+    P #= S.get(inputs/vf_characteristics/'1st_output_voltage_gain'),
+    format(atom(Msg), '~D %% of 1st Motor Rated Voltage gain', [S.get(inputs/vf_characteristics/'1st_output_voltage_gain')]),
+    P >= 20.0,
+    P =< 100.0,
+    !.
 a045(100.0, default).
+
+a245(P, Msg):-
+    b_getval(spec, S),
+    P #= S.get(inputs/vf_characteristics/'2nd_output_voltage_gain'),
+    format(atom(Msg), '~D %% of 2nd Motor Rated Voltage gain', [S.get(inputs/vf_characteristics/'2nd_output_voltage_gain')]),
+    P >= 20.0,
+    P =< 100.0,
+    !.
+a245(100.0, default).
+
+a046(P, Msg):-
+    b_getval(spec, S),
+    P #= S.get(inputs/vf_characteristics/'1st_automatic_torque_boost_voltage_compensation_gain'),
+    format(atom(Msg), '~D %% of 1st Automatic Torque Boost Voltage Compensation Gain', [S.get(inputs/vf_characteristics/'1st_automatic_torque_boost_voltage_compensation_gain')]),
+    P >= 0.0,
+    P =< 255.0,
+    !.
 a046(100.0, default).
+
+a246(P, Msg):-
+    b_getval(spec, S),
+    P #= S.get(inputs/vf_characteristics/'2nd_automatic_torque_boost_voltage_compensation_gain'),
+    format(atom(Msg), '~D %% of 2nd Automatic Torque Boost Voltage Compensation Gain', [S.get(inputs/vf_characteristics/'2nd_automatic_torque_boost_voltage_compensation_gain')]),
+    P >= 0.0,
+    P =< 255.0,
+    !.
+a246(100.0, default).
+
+a047(P, Msg):-
+    b_getval(spec, S),
+    P #= S.get(inputs/vf_characteristics/'1st_automatic_torque_boost_slip_compensation_gain'),
+    format(atom(Msg), '~D %% of 1st Automatic Torque Boost Slip Compensation Gain', [S.get(inputs/vf_characteristics/'1st_automatic_torque_boost_slip_compensation_gain')]),
+    P >= 0.0,
+    P =< 255.0,
+    !.
 a047(0.0, default).
+
+a247(P, Msg):-
+    b_getval(spec, S),
+    P #= S.get(inputs/vf_characteristics/'2nd_automatic_torque_boost_slip_compensation_gain'),
+    format(atom(Msg), '~D %% of 2nd Automatic Torque Boost Slip Compensation Gain', [S.get(inputs/vf_characteristics/'2nd_automatic_torque_boost_slip_compensation_gain')]),
+    P >= 0.0,
+    P =< 255.0,
+    !.
+a247(0.0, default).
+
+
 a051(00, default).
 a052(0.50, default).
 a053(0.0, default).
@@ -674,6 +800,8 @@ a056(01, default).
 a057(0.0, default).
 a058(0.0, default).
 a059(5.0, default).
+
+
 a061(0.00, default).
 a062(0.00, default).
 a063(0.00, default).
@@ -731,12 +859,7 @@ a162(0.00, default).
 a163(0.0, default).
 a164(100.0, default).
 a165(01, default).
-a242(1.0, default).
-a243(5.0, default).
-a244(00, default).
-a245(100.0, default).
-a246(100.0, default).
-a247(0.0, default).
+
 a261(0.00, default).
 a262(0.00, default).
 a281(02, default).
